@@ -9,22 +9,20 @@ import {
   type AuthError
 } from 'firebase/auth';
 import { auth } from '@/config/firebase';
-import type { AuthContextType, AuthErrorResponse } from '@/types/auth-types';
+import type { 
+  AuthContextType, 
+  AuthErrorResponse,
+  SignInCredentials,
+  SignUpCredentials 
+} from '@/types';
 import { 
   getAuthErrorMessage, 
   isValidEmail, 
   isValidPassword 
 } from '@/config/auth-utils';
 
-// ============================================
-// CONTEXT CREATION
-// ============================================
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// ============================================
-// AUTH PROVIDER COMPONENT
-// ============================================
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -35,9 +33,7 @@ export function AuthProvider({ children }: AuthProviderProps): React.JSX.Element
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<AuthErrorResponse | null>(null);
 
-  // Listen to auth state changes
   useEffect(() => {
-    // FIXED: Use Error type instead of AuthError for the error callback
     const unsubscribe = onAuthStateChanged(
       auth,
       (currentUser: User | null) => {
@@ -45,7 +41,7 @@ export function AuthProvider({ children }: AuthProviderProps): React.JSX.Element
         setUser(currentUser);
         setLoading(false);
       },
-      (error: Error) => {  // FIXED: Changed from AuthError to Error
+      (error: Error) => {
         console.error('Auth state change error:', error);
         
         // Type guard to check if it's an AuthError
@@ -69,9 +65,10 @@ export function AuthProvider({ children }: AuthProviderProps): React.JSX.Element
    * Sign in with email and password
    */
   const signIn = async (
-    email: string, 
-    password: string
+    credentials: SignInCredentials
   ): Promise<UserCredential> => {
+    const { email, password } = credentials;
+    
     try {
       setError(null);
       
@@ -119,9 +116,10 @@ export function AuthProvider({ children }: AuthProviderProps): React.JSX.Element
    * Sign up with email and password
    */
   const signUp = async (
-    email: string, 
-    password: string
+    credentials: SignUpCredentials
   ): Promise<UserCredential> => {
+    const { email, password } = credentials;
+    
     try {
       setError(null);
       

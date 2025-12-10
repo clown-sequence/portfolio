@@ -92,7 +92,10 @@ export function AdminLogin({
     setIsSubmitting(true);
 
     try {
-      const userCredential = await signIn(formData.email, formData.password);
+      const userCredential = await signIn({
+        email: formData.email, 
+        password: formData.password
+      });
       console.log('Login successful!', userCredential);
       
       // Call success callback if provided

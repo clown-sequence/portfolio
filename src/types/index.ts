@@ -2,7 +2,7 @@
 // Base Types
 // ============================================================================
 
-import type { User } from "firebase/auth";
+import type { User, UserCredential } from "firebase/auth";
 
 export type TabType = 'projects' | 'about' | 'testimonials' | 'connect';
 export type FormMode = 'view' | 'edit' | 'create';
@@ -22,6 +22,7 @@ export interface AuthErrorResponse {
 /**
  * Sign in credentials
  */
+
 export interface SignInCredentials {
   email: string;
   password: string;
@@ -44,8 +45,8 @@ export interface AuthContextType {
   error: AuthErrorResponse | null;
   
   // Methods
-  signIn: (credentials: SignInCredentials) => Promise<Credential>;
-  signUp: (credentials: SignUpCredentials) => Promise<Credential>;
+  signIn: (credentials: SignInCredentials) => Promise<UserCredential>;
+  signUp: (credentials: SignUpCredentials) => Promise<UserCredential>;
   logout: () => Promise<void>;
   clearError: () => void;
   
@@ -54,7 +55,6 @@ export interface AuthContextType {
   getUserId: () => string | null;
   getUserEmail: () => string | null;
 }
-
 // ============================================================================
 // Project Types
 // ============================================================================

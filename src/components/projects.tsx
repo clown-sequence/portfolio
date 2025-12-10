@@ -15,113 +15,6 @@ const defaultMedia: { type: 'image' | 'video'; src: string } = {
   src: 'https://images.unsplash.com/photo-1572177812156-58036aae439c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
 };
 
-// Hardcoded projects data
-// const projectsData: Project[] = [
-//   {
-//     id: 1,
-//     name: "EvoBots: Mobile Arena",
-//     status: true,
-//     category: "Mobile (Java/Kotlin)",
-//     description: "A 2D/light 3D mobile adaptation of the engine. Users train and evolve AI bots in simplified arenas on their devices, with offline genetic simulation and a clean Material Design UI.",
-//     technologies: ["Java/Kotlin", "Android SDK", "LibGDX/OpenGL ES", "SQLite"],
-//     livePreview: 'https://example.com/evobots-demo',
-//     github: 'https://github.com/example/evobots-mobile',
-//     keyFeature: "Train in pocket – genetic evolution runs as a background service",
-//     inspiredBy: ["Genetic Algorithm", "Autonomous Agents"],
-//     rotation: generateRotation()
-//   },
-//   {
-//     id: 2,
-//     name: "Genetic Command Center",
-//     status: false,
-//     category: "Java",
-//     description: "A desktop/server-side application that acts as a distributed controller for heavy-duty AI bot evolution simulations. Manages populations and runs batch simulations on remote workers.",
-//     technologies: ["Java SE", "JavaFX/Swing", "Multithreading", "Apache Kafka/Netty", "PostgreSQL"],
-//     livePreview: '',
-//     github: 'https://github.com/example/genetic-command',
-//     keyFeature: "Fleet management for thousands of bot genomes across simulation nodes",
-//     inspiredBy: ["Core Simulation", "Data Management"],
-//     rotation: generateRotation()
-//   },
-//   {
-//     id: 3,
-//     name: "NeuroEvolution Sandbox",
-//     status: true,
-//     category: "Python (AI)",
-//     description: "Extension of the engine replacing GA with NeuroEvolution (NEAT/HyperNEAT). Bots have evolving neural networks enabling complex behaviors like cooperation and memory.",
-//     technologies: ["Python", "PyOpenGL", "NumPy", "neat-python", "Enhanced core/engine.py"],
-//     livePreview: 'https://example.com/neuroevolution',
-//     github: '',
-//     keyFeature: "Visual real-time rendering of evolving neural network structures",
-//     inspiredBy: ["AI Agents", "3D Simulation"],
-//     rotation: generateRotation()
-//   },
-//   {
-//     id: 4,
-//     name: "Ecosystem Simulator & Data Pipeline",
-//     status: false,
-//     category: "Python (Data/Backend)",
-//     description: "Applies simulation logic to model real-world systems (traffic, markets). Focuses on data generation, logging, and analytics dashboards.",
-//     technologies: ["Python", "Pandas", "Matplotlib/Plotly", "FastAPI", "InfluxDB/PostgreSQL"],
-//     livePreview: '',
-//     github: '',
-//     keyFeature: "Massive-scale simulation data export for AI training sets",
-//     inspiredBy: ["Simulation Logic", "Config-driven Design"],
-//     rotation: generateRotation()
-//   },
-//   {
-//     id: 5,
-//     name: "AI Engine Web Dashboard",
-//     status: true,
-//     category: "Web (Full-Stack)",
-//     description: "Web-based control panel and visualization suite for the existing Python engine. Displays real-time stats, genome trees, and leaderboards.",
-//     technologies: ["React", "Node.js/Express", "Python/FastAPI", "Socket.io", "Chart.js", "Tailwind CSS"],
-//     livePreview: 'https://example.com/ai-dashboard',
-//     github: 'https://github.com/example/ai-dashboard',
-//     keyFeature: "Remote real-time monitoring and intervention in genetic evolution",
-//     inspiredBy: ["Real-time Graphics", "System Management"],
-//     rotation: generateRotation()
-//   },
-//   {
-//     id: 6,
-//     name: "Genome Visualizer & Interactive Lineage Explorer",
-//     status: true,
-//     category: "React (Frontend)",
-//     description: "Standalone React application visualizing engine output. Provides interactive charts, phylogenetic trees, and a gene editor.",
-//     technologies: ["React", "TypeScript", "D3.js", "Recharts", "Vite"],
-//     livePreview: 'https://example.com/genome-viz',
-//     github: 'https://github.com/example/genome-visualizer',
-//     keyFeature: "Interactive phylogenetic tree showing inheritance and mutation across generations",
-//     inspiredBy: ["Genetic Algorithm", "Data Output"],
-//     rotation: generateRotation()
-//   },
-//   {
-//     id: 7,
-//     name: "RL Coach for Evolved Bots",
-//     status: false,
-//     category: "AI (Machine Learning)",
-//     description: "Hybrid AI system using evolved bots as starting population for Reinforcement Learning (RL) training. Creates synergy between evolution and learning.",
-//     technologies: ["Python", "PyTorch/TensorFlow", "RLlib/Stable-Baselines3", "core/engine.py integration"],
-//     livePreview: '',
-//     github: 'https://github.com/example/rl-coach',
-//     keyFeature: "Seamless pipeline from genetic evolution to fine-tuned reinforcement learning",
-//     inspiredBy: ["AI Learning", "Adaptation"],
-//     rotation: generateRotation()
-//   },
-//   {
-//     id: 8,
-//     name: "Vision-Based AI Arena & Natural Language Commander",
-//     status: true,
-//     category: "AI (CV/LLM)",
-//     description: "Bots perceive through simulated vision (CNN) and follow commands from an LLM that interprets natural language instructions.",
-//     technologies: ["Python", "OpenCV/PyTorch Vision", "Transformers library", "LangChain", "Llama.cpp"],
-//     livePreview: 'https://example.com/vision-arena',
-//     github: '',
-//     keyFeature: "Give AI army natural language orders and watch them strategize via evolved instincts",
-//     inspiredBy: ["AI Integration", "Dynamic World"],
-//     rotation: generateRotation()
-//   }
-// ];
 
 export const Projects: React.FC = () => {
   const { projects } = useProjectsFetcher()
@@ -162,12 +55,19 @@ export const Projects: React.FC = () => {
 
   // Video playback control
   useEffect(() => {
+    if (projects.length === 0) return;
+
     const activeProject: Project = projects[active];
     const activeVideo: HTMLVideoElement | undefined = videoRefs.current.get(active);
 
-    if (activeVideo && activeProject.media?.type === 'video') {
+    // Handle active video
+    if (activeVideo && getMediaType(activeProject) === 'video') {
       if (isHovered) {
-        activeVideo.play().catch((err: Error) => console.log('Video play failed:', err));
+        // Small delay to ensure video is ready
+        const playPromise = activeVideo.play();
+        if (playPromise !== undefined) {
+          playPromise.catch((err: Error) => console.log('Video play failed:', err));
+        }
       } else {
         activeVideo.pause();
         activeVideo.currentTime = 0;
@@ -176,12 +76,12 @@ export const Projects: React.FC = () => {
 
     // Pause all other videos
     videoRefs.current.forEach((video: HTMLVideoElement, index: number) => {
-      if (index !== active) {
+      if (index !== active && video) {
         video.pause();
         video.currentTime = 0;
       }
     });
-  }, [isHovered, active, projects]);
+  }, [isHovered, active, projects])
 
   return (
     <div className="mx-auto max-w-sm px-4 py-20 font-sans antialiased md:max-w-6xl md:px-8 lg:px-12">

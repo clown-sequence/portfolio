@@ -37,14 +37,11 @@ export function AuthProvider({ children }: AuthProviderProps): React.JSX.Element
     const unsubscribe = onAuthStateChanged(
       auth,
       (currentUser: User | null) => {
-        console.log('Auth state changed:', currentUser?.email || 'No user');
         setUser(currentUser);
         setLoading(false);
       },
       (error: Error) => {
-        console.error('Auth state change error:', error);
         
-        // Type guard to check if it's an AuthError
         if ('code' in error && typeof (error as AuthError).code === 'string') {
           setError(getAuthErrorMessage(error as AuthError));
         } else {
@@ -57,13 +54,9 @@ export function AuthProvider({ children }: AuthProviderProps): React.JSX.Element
       }
     );
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
 
-  /**
-   * Sign in with email and password
-   */
   const signIn = async (
     credentials: SignInCredentials
   ): Promise<UserCredential> => {
@@ -98,23 +91,18 @@ export function AuthProvider({ children }: AuthProviderProps): React.JSX.Element
         password
       );
       
-      console.log('Sign in successful:', userCredential.user.email);
       return userCredential;
       
     } catch (err) {
       const authError = err as AuthError;
       const errorResponse = getAuthErrorMessage(authError);
       setError(errorResponse);
-      console.error('Sign in error:', errorResponse);
       throw new Error(errorResponse.message);
     } finally {
       setLoading(false);
     }
   };
 
-  /**
-   * Sign up with email and password
-   */
   const signUp = async (
     credentials: SignUpCredentials
   ): Promise<UserCredential> => {
@@ -159,59 +147,40 @@ export function AuthProvider({ children }: AuthProviderProps): React.JSX.Element
         password
       );
       
-      console.log('Sign up successful:', userCredential.user.email);
       return userCredential;
       
     } catch (err) {
       const authError = err as AuthError;
       const errorResponse = getAuthErrorMessage(authError);
       setError(errorResponse);
-      console.error('Sign up error:', errorResponse);
       throw new Error(errorResponse.message);
     } finally {
       setLoading(false);
     }
   };
 
-  /**
-   * Logout current user
-   */
   const logout = async (): Promise<void> => {
     try {
       setError(null);
       await signOut(auth);
-      console.log('Logout successful');
     } catch (err) {
       const authError = err as AuthError;
       const errorResponse = getAuthErrorMessage(authError);
       setError(errorResponse);
-      console.error('Logout error:', errorResponse);
       throw new Error(errorResponse.message);
     }
   };
 
-  /**
-   * Clear error state
-   */
   const clearError = (): void => {
     setError(null);
   };
 
-  /**
-   * Check if user is authenticated
-   */
   const isAuthenticated = !!user;
 
-  /**
-   * Get current user ID
-   */
   const getUserId = (): string | null => {
     return user?.uid || null;
   };
 
-  /**
-   * Get current user email
-   */
   const getUserEmail = (): string | null => {
     return user?.email || null;
   };
@@ -236,15 +205,6 @@ export function AuthProvider({ children }: AuthProviderProps): React.JSX.Element
   );
 }
 
-// ============================================
-// CUSTOM HOOK (Only export this and AuthProvider)
-// ============================================
-
-/**
- * Custom hook to use auth context
- * @throws {Error} If used outside of AuthProvider
- * @returns {AuthContextType} Auth context value
- */
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
   

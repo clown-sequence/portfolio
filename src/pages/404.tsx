@@ -28,25 +28,17 @@ export const NotFound = () => {
         <h1 className={'text-9xl font-bold mb-4 transition-colors dark:text-white text-black'}>
           404
         </h1>
-
-        {/* Subtitle */}
         <h2 className={'text-3xl font-semibold mb-6 transition-colors dark:text-gray-300 text-gray-700'}>
           Page Not Found
         </h2>
-
-        {/* Description */}
         <p className={'text-lg mb-8 transition-colors dark:text-gray-400 text-gray-600'}>
           The page you're looking for doesn't exist or has been moved.
         </p>
-
-        {/* Countdown */}
         <div className={'inline-block px-6 py-3 rounded-lg mb-8 transition-colors dark:bg-white dark:text-black bg-black text-white'}>
           <p className="text-lg">
             Redirecting to home in <span className="font-bold text-2xl">{countdown}</span> seconds
           </p>
         </div>
-
-        {/* Manual Navigation Button */}
         <div>
           <button
             onClick={handleGoHome}

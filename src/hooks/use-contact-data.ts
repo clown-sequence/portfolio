@@ -17,81 +17,9 @@ import {
   type Unsubscribe
 } from 'firebase/firestore';
 import { db } from '@/config/firebase';
-import type { ContactData } from '@/types';
+import type { ContactDataState, ContactDocument, RawContactData, UseContactByIdReturn, UseContactDataReturn } from '@/types';
 
-// ==================== TYPE DEFINITIONS ====================
 
-/**
- * Extended ContactData type with metadata
- */
-interface ContactDocument extends ContactData {
-  id: string;
-  createdBy?: string;
-  updatedBy?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-/**
- * State for contact data management
- */
-interface ContactDataState {
-  contact: ContactDocument | null;
-  loading: boolean;
-  error: string | null;
-  isOnline: boolean;
-}
-
-/**
- * Return type for useContactData hook
- */
-interface UseContactDataReturn {
-  contact: ContactDocument | null;
-  loading: boolean;
-  error: string | null;
-  isOnline: boolean;
-  refresh: () => Promise<void>;
-}
-
-/**
- * Return type for useContactById hook
- */
-interface UseContactByIdReturn {
-  contact: ContactDocument | null;
-  loading: boolean;
-  error: string | null;
-  isOnline: boolean;
-}
-
-/**
- * Raw Firestore document data structure
- */
-interface RawContactData {
-  availableHours?: {
-    weekdays?: string;
-    weekends?: string;
-  };
-  hotline?: {
-    phone?: string;
-    location?: string;
-  };
-  socialLinks?: {
-    facebook?: string;
-    instagram?: string;
-    twitter?: string;
-    linkedin?: string;
-  };
-  createdBy?: string;
-  updatedBy?: string;
-  createdAt?: Timestamp;
-  updatedAt?: Timestamp;
-}
-
-// ==================== HELPER FUNCTIONS ====================
-
-/**
- * Transforms Firestore document to ContactDocument
- */
 const transformDocument = (docId: string, data: RawContactData): ContactDocument => {
   return {
     id: docId,
@@ -138,13 +66,6 @@ const getErrorMessage = (err: unknown): string => {
   return 'Failed to fetch contact data';
 };
 
-// ==================== HOOKS ====================
-
-/**
- * Hook to fetch and manage contact data with optional real-time updates
- * @param realtime - Enable real-time Firestore listener (default: true)
- * @returns Contact data state and refresh function
- */
 export function useContactData(realtime: boolean = true): UseContactDataReturn {
   const [state, setState] = useState<ContactDataState>({
     contact: null,
@@ -182,7 +103,7 @@ export function useContactData(realtime: boolean = true): UseContactDataReturn {
   useEffect((): (() => void) | undefined => {
     if (!realtime) return; // Skip if real-time is disabled
 
-    console.log('🔄 Setting up real-time listener for contact data...');
+    // console.log('🔄 Setting up real-time listener for contact data...');
     
     const contactQuery: Query<DocumentData> = query(
       collection(db, 'contact'),
@@ -193,10 +114,10 @@ export function useContactData(realtime: boolean = true): UseContactDataReturn {
     const unsubscribe: Unsubscribe = onSnapshot(
       contactQuery,
       (snapshot: QuerySnapshot<DocumentData>): void => {
-        console.log('📊 Real-time snapshot received, documents:', snapshot.size);
+        // console.log('📊 Real-time snapshot received, documents:', snapshot.size);
         
         if (snapshot.empty) {
-          console.log('ℹ️ No contact document found');
+          // console.log('ℹ️ No contact document found');
           setState(prev => ({
             ...prev,
             contact: null,
@@ -210,7 +131,7 @@ export function useContactData(realtime: boolean = true): UseContactDataReturn {
         
         const contactData: ContactDocument = transformDocument(docSnap.id, data);
         
-        console.log('✅ Contact loaded (real-time):', contactData);
+        // console.log('✅ Contact loaded (real-time):', contactData);
         setState(prev => ({
           ...prev,
           contact: contactData,
@@ -231,7 +152,7 @@ export function useContactData(realtime: boolean = true): UseContactDataReturn {
     );
 
     return (): void => {
-      console.log('🛑 Cleaning up real-time contact listener');
+      // console.log('🛑 Cleaning up real-time contact listener');
       unsubscribe();
     };
   }, [realtime]);
@@ -241,7 +162,7 @@ export function useContactData(realtime: boolean = true): UseContactDataReturn {
     if (realtime) return; // Skip if real-time is enabled
 
     const fetchContact = async (): Promise<void> => {
-      console.log('📥 Fetching contact data (one-time)...');
+      // console.log('📥 Fetching contact data (one-time)...');
       setState(prev => ({ ...prev, loading: true, error: null }));
 
       try {
@@ -254,7 +175,7 @@ export function useContactData(realtime: boolean = true): UseContactDataReturn {
         const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(contactQuery);
 
         if (querySnapshot.empty) {
-          console.log('ℹ️ No contact document found');
+          // console.log('ℹ️ No contact document found');
           setState(prev => ({
             ...prev,
             contact: null,
@@ -268,7 +189,7 @@ export function useContactData(realtime: boolean = true): UseContactDataReturn {
         
         const contactData: ContactDocument = transformDocument(docSnap.id, data);
         
-        console.log('✅ Contact fetched (one-time):', contactData);
+        // console.log('✅ Contact fetched (one-time):', contactData);
         setState({
           contact: contactData,
           loading: false,
@@ -276,7 +197,7 @@ export function useContactData(realtime: boolean = true): UseContactDataReturn {
           isOnline: navigator.onLine,
         });
       } catch (err) {
-        console.error('❌ Error fetching contact:', err);
+        // console.error('❌ Error fetching contact:', err);
         const errorMessage: string = getErrorMessage(err);
         
         setState(prev => ({
@@ -294,7 +215,7 @@ export function useContactData(realtime: boolean = true): UseContactDataReturn {
    * Manual refresh function to fetch latest contact data
    */
   const refresh = async (): Promise<void> => {
-    console.log('🔄 Manual refresh triggered...');
+    // console.log('🔄 Manual refresh triggered...');
     setState(prev => ({ ...prev, loading: true, error: null }));
 
     try {
@@ -307,7 +228,7 @@ export function useContactData(realtime: boolean = true): UseContactDataReturn {
       const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(contactQuery);
 
       if (querySnapshot.empty) {
-        console.log('ℹ️ No contact document found');
+        // console.log('ℹ️ No contact document found');
         setState(prev => ({
           ...prev,
           contact: null,
@@ -321,7 +242,7 @@ export function useContactData(realtime: boolean = true): UseContactDataReturn {
       
       const contactData: ContactDocument = transformDocument(docSnap.id, data);
       
-      console.log('✅ Contact refreshed:', contactData);
+      // console.log('✅ Contact refreshed:', contactData);
       setState(prev => ({
         ...prev,
         contact: contactData,
@@ -329,7 +250,7 @@ export function useContactData(realtime: boolean = true): UseContactDataReturn {
         error: null,
       }));
     } catch (err) {
-      console.error('❌ Error refreshing contact:', err);
+      // console.error('❌ Error refreshing contact:', err);
       const errorMessage: string = getErrorMessage(err);
       
       setState(prev => ({
@@ -349,12 +270,6 @@ export function useContactData(realtime: boolean = true): UseContactDataReturn {
   };
 }
 
-/**
- * Hook to fetch and manage a specific contact by ID with optional real-time updates
- * @param contactId - Contact document ID (null to skip fetching)
- * @param realtime - Enable real-time Firestore listener (default: true)
- * @returns Contact data state
- */
 export function useContactById(
   contactId: string | null, 
   realtime: boolean = true
@@ -372,7 +287,7 @@ export function useContactById(
     if (!contactId) return; // Exit early if no contactId
     if (!realtime) return; // Skip if real-time is disabled
 
-    console.log('🔄 Setting up real-time listener for contact ID:', contactId);
+    console.log('🔄 Setting up real-time liste/ner for contact ID:', contactId);
     
     const contactRef = doc(db, 'contact', contactId);
 
@@ -380,7 +295,7 @@ export function useContactById(
       contactRef,
       (docSnap: DocumentSnapshot<DocumentData>): void => {
         if (!docSnap.exists()) {
-          console.log('ℹ️ Contact document not found');
+          // console.log('ℹ️ Contact document not found');
           setState(prev => ({
             ...prev,
             contact: null,
@@ -393,7 +308,7 @@ export function useContactById(
         const data = docSnap.data() as RawContactData;
         const contactData: ContactDocument = transformDocument(docSnap.id, data);
         
-        console.log('✅ Contact loaded by ID (real-time):', contactData);
+        // console.log('✅ Contact loaded by ID (real-time):', contactData);
         setState(prev => ({
           ...prev,
           contact: contactData,
@@ -402,7 +317,7 @@ export function useContactById(
         }));
       },
       (err: FirestoreError): void => {
-        console.error('❌ Error in real-time listener:', err);
+        // console.error('❌ Error in real-time listener:', err);
         const errorMessage: string = getErrorMessage(err);
         
         setState(prev => ({
@@ -414,7 +329,7 @@ export function useContactById(
     );
 
     return (): void => {
-      console.log('🛑 Cleaning up contact listener for ID:', contactId);
+      // console.log('🛑 Cleaning up contact listener for ID:', contactId);
       unsubscribe();
     };
   }, [contactId, realtime]);
@@ -424,7 +339,7 @@ export function useContactById(
     if (!contactId || realtime) return; // Skip if no ID or real-time is enabled
 
     const fetchContactById = async (): Promise<void> => {
-      console.log('📥 Fetching contact by ID:', contactId);
+      // console.log('📥 Fetching contact by ID:', contactId);
       setState(prev => ({ ...prev, loading: true, error: null }));
 
       try {
@@ -444,7 +359,7 @@ export function useContactById(
         const data = docSnap.data() as RawContactData;
         const contactData: ContactDocument = transformDocument(docSnap.id, data);
         
-        console.log('✅ Contact fetched by ID:', contactData);
+        // console.log('✅ Contact fetched by ID:', contactData);
         setState({
           contact: contactData,
           loading: false,

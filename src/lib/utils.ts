@@ -11,15 +11,10 @@ export function formatJoinedDate(date: string | Date | undefined | null): string
   }
 
   try {
-    // Convert string to Date if needed
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-    
-    // Check if valid date
     if (isNaN(dateObj.getTime())) {
       return 'Invalid date';
     }
-
-    // Format the date
     return dateObj.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',

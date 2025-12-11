@@ -1,9 +1,6 @@
 import type { AuthError, User } from 'firebase/auth';
 import type { AuthErrorResponse } from '@/types';
 
-/**
- * Convert Firebase auth error to user-friendly message
- */
 export const getAuthErrorMessage = (error: AuthError): AuthErrorResponse => {
   const errorMessages: Record<string, string> = {
     'auth/invalid-email': 'Invalid email address format',
@@ -25,17 +22,11 @@ export const getAuthErrorMessage = (error: AuthError): AuthErrorResponse => {
   };
 };
 
-/**
- * Validate email format
- */
 export const isValidEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 };
 
-/**
- * Validate password strength
- */
 export const isValidPassword = (password: string): { valid: boolean; message?: string } => {
   if (password.length < 6) {
     return { valid: false, message: 'Password must be at least 6 characters' };
@@ -43,9 +34,6 @@ export const isValidPassword = (password: string): { valid: boolean; message?: s
   return { valid: true };
 };
 
-/**
- * Type guard to check if error is an AuthError
- */
 export const isAuthError = (error: unknown): error is AuthError => {
   return (
     typeof error === 'object' &&
@@ -56,9 +44,6 @@ export const isAuthError = (error: unknown): error is AuthError => {
   );
 };
 
-/**
- * Type guard to check if user is authenticated
- */
 export const isUserAuthenticated = (user: User | null): user is User => {
   return user !== null;
 };

@@ -1,64 +1,31 @@
-// ============================================================================
-// Base Types
-// ============================================================================
-
 import type { User, UserCredential } from "firebase/auth";
+import type { Timestamp } from "firebase/firestore";
 
 export type TabType = 'projects' | 'about' | 'testimonials' | 'connect';
 export type FormMode = 'view' | 'edit' | 'create';
-
-// ============================================================================
-// Authentication Types
-// ============================================================================
-
-/**
- * Authentication error with user-friendly messages
- */
 export interface AuthErrorResponse {
   code: string;
   message: string;
 }
-
-/**
- * Sign in credentials
- */
-
 export interface SignInCredentials {
   email: string;
   password: string;
 }
-
-/**
- * Sign up credentials with optional display name
- */
 export interface SignUpCredentials extends SignInCredentials {
   displayName?: string;
 }
-
-/**
- * Auth context state and methods
- */
 export interface AuthContextType {
-  // State
   user: User | null;
   loading: boolean;
   error: AuthErrorResponse | null;
-  
-  // Methods
   signIn: (credentials: SignInCredentials) => Promise<UserCredential>;
   signUp: (credentials: SignUpCredentials) => Promise<UserCredential>;
   logout: () => Promise<void>;
   clearError: () => void;
-  
-  // Helper methods
   isAuthenticated: boolean;
   getUserId: () => string | null;
   getUserEmail: () => string | null;
 }
-// ============================================================================
-// Project Types
-// ============================================================================
-
 export interface ProjectMedia {
   type: 'image' | 'video';
   src: string;
@@ -108,10 +75,6 @@ export interface ProjectMetrics {
   [key: string]: string | number | undefined;
 }
 
-// ============================================================================
-// About Me Types
-// ============================================================================
-
 export interface Skill {
   id: string;
   name: string;
@@ -122,6 +85,66 @@ export interface SkillCategory {
   id: string;
   title: string;
   skills: Skill[];
+}
+
+export type Theme = 'light' | 'dark' | 'system';
+export type ResolvedTheme = 'light' | 'dark';
+export interface ContactDocument extends ContactData {
+  id: string;
+  createdBy?: string;
+  updatedBy?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface ContactDataState {
+  contact: ContactDocument | null;
+  loading: boolean;
+  error: string | null;
+  isOnline: boolean;
+}
+
+export interface UseContactDataReturn {
+  contact: ContactDocument | null;
+  loading: boolean;
+  error: string | null;
+  isOnline: boolean;
+  refresh: () => Promise<void>;
+}
+
+export interface UseContactByIdReturn {
+  contact: ContactDocument | null;
+  loading: boolean;
+  error: string | null;
+  isOnline: boolean;
+}
+
+export interface RawContactData {
+  availableHours?: {
+    weekdays?: string;
+    weekends?: string;
+  };
+  hotline?: {
+    phone?: string;
+    location?: string;
+  };
+  socialLinks?: {
+    facebook?: string;
+    instagram?: string;
+    twitter?: string;
+    linkedin?: string;
+  };
+  createdBy?: string;
+  updatedBy?: string;
+  createdAt?: Timestamp;
+  updatedAt?: Timestamp;
+}
+
+export interface ThemeContextType {
+  theme: Theme;
+  resolvedTheme: ResolvedTheme;
+  setTheme: (theme: Theme) => void;
+  toggleTheme: () => void;
 }
 
 export interface BaseAboutMe {
@@ -164,9 +187,6 @@ export interface ContactData {
     linkedin: string;
   };
 }
-// ============================================================================
-// Testimonial Types
-// ============================================================================
 
 export interface BaseTestimonial {
   clientName: string;
@@ -178,8 +198,6 @@ export interface BaseTestimonial {
   approved?: boolean;
   image?: string;
   createdAt?: Date | string;
-  
-  // UI compatibility fields
   name?: string;
   avatar?: string;
   content?: string;
@@ -201,10 +219,6 @@ export type CreateTestimonialData = BaseTestimonial;
 export interface UpdateTestimonialData extends Partial<BaseTestimonial> {
   id: string;
 }
-
-// ============================================================================
-// UI Component Types
-// ============================================================================
 
 export interface BentoGridItem {
   className?: string;
@@ -236,18 +250,9 @@ export interface DeleteConfirmation {
   id: string;
 }
 
-// ============================================================================
-// Event Handler Types
-// ============================================================================
-
 export type KeyboardEventHandler = (event: KeyboardEvent) => void;
 export type MouseEventHandler = (e: React.MouseEvent<HTMLDivElement>) => void;
 export type MediaQueryChangeHandler = (e: MediaQueryListEvent) => void;
-
-// ============================================================================
-// Form Types
-// ============================================================================
-
 export interface ProjectFormData extends BaseProject {
   id?: string;
 }
@@ -259,11 +264,6 @@ export interface AboutMeFormData extends BaseAboutMe {
 export interface TestimonialFormData extends BaseTestimonial {
   id?: string;
 }
-
-// ============================================================================
-// Component Props Types (REMOVED empty interfaces)
-// ============================================================================
-
 export interface BaseTabProps {
   mode: FormMode;
   setMode: React.Dispatch<React.SetStateAction<FormMode>>;
@@ -289,11 +289,6 @@ export interface TestimonialsTabProps extends BaseTabProps {
   onUpdateTestimonial?: (data: UpdateTestimonialData) => Promise<void>;
   onDeleteTestimonial?: (id: string) => Promise<void>;
 }
-
-// ============================================================================
-// State Management Types
-// ============================================================================
-
 export interface AdminDashboardState {
   activeTab: TabType;
   isDarkMode: boolean;
@@ -310,11 +305,6 @@ export interface AdminDashboardState {
   isLoading: boolean;
   error: string | null;
 }
-
-// ============================================================================
-// API & Validation Types
-// ============================================================================
-
 export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
@@ -343,11 +333,6 @@ export interface ValidationResult {
   errors: ValidationError[];
   warnings?: ValidationError[];
 }
-
-// ============================================================================
-// Action Types (for useReducer)
-// ============================================================================
-
 export type AdminAction =
   | { type: 'SET_ACTIVE_TAB'; payload: TabType }
   | { type: 'TOGGLE_DARK_MODE' }
@@ -371,10 +356,6 @@ export type AdminAction =
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'CLEAR_ERROR' };
 
-// ============================================================================
-// Utility Types
-// ============================================================================
-
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
@@ -382,11 +363,6 @@ export type DeepPartial<T> = {
 export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
 
 export type OptionalFields<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-
-// ============================================================================
-// Type Guards
-// ============================================================================
-
 export const isProject = (item: unknown): item is Project => {
   return (
     typeof item === 'object' &&
@@ -433,14 +409,6 @@ export const isValidTabType = (value: string): value is TabType => {
 export const isValidFormMode = (value: string): value is FormMode => {
   return ['view', 'edit', 'create'].includes(value);
 };
-
-// ============================================================================
-// Helper Functions
-// ============================================================================
-
-/**
- * Converts form data to update data
- */
 export const toUpdateProjectData = (formData: ProjectFormData): UpdateProjectData | null => {
   if (!formData.id) return null;
   
@@ -460,9 +428,6 @@ export const toUpdateProjectData = (formData: ProjectFormData): UpdateProjectDat
   };
 };
 
-/**
- * Converts form data to create data
- */
 export const toCreateProjectData = (formData: ProjectFormData): CreateProjectData => {
   const { ...createData } = formData;
   return createData;
@@ -481,20 +446,12 @@ export const toUpdateTestimonialData = (formData: TestimonialFormData): UpdateTe
   const { id, ...updateData } = formData;
   return { id, ...updateData };
 };
-
-/**
- * Type-safe way to check if an object has a property
- */
 export function hasProperty<T extends object, K extends PropertyKey>(
   obj: T,
   key: K
 ): obj is T & Record<K, unknown> {
   return key in obj;
 }
-
-/**
- * Type-safe way to get a property value
- */
 export function getProperty<T extends object, K extends keyof T>(
   obj: T,
   key: K

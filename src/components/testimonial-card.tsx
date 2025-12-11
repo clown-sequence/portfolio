@@ -26,11 +26,9 @@ export const TestimonialCard: React.FC<TestimonialCardProps> = ({
       onClick={onClick}
       className="bg-white dark:bg-neutral-900 rounded-2xl p-6 shadow-lg hover:shadow-2xl cursor-pointer border border-gray-100 dark:border-neutral-800 relative overflow-hidden group"
     >
-      {/* Gradient overlay on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       
       <div className="relative z-10">
-        {/* Header */}
         <div className="flex items-start gap-4 mb-4">
           <div className="relative">
             <motion.div
@@ -69,7 +67,6 @@ export const TestimonialCard: React.FC<TestimonialCardProps> = ({
             </p>
           </div>
           
-          {/* Rating */}
           <div className="flex gap-0.5">
             {[...Array(testimonial.rating)].map((_, i) => (
               <motion.div
@@ -84,7 +81,6 @@ export const TestimonialCard: React.FC<TestimonialCardProps> = ({
           </div>
         </div>
 
-        {/* Message Preview */}
         <div className="relative">
           <Quote className="absolute -top-2 -left-2 w-8 h-8 text-blue-500/20" />
           <p className="text-gray-700 dark:text-gray-300 line-clamp-3 pl-4">
@@ -92,7 +88,6 @@ export const TestimonialCard: React.FC<TestimonialCardProps> = ({
           </p>
         </div>
 
-        {/* Footer */}
         <div className="mt-4 pt-4 border-t border-gray-100 dark:border-neutral-800 flex items-center justify-between text-sm">
           <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
             <Briefcase className="w-4 h-4" />
@@ -103,7 +98,6 @@ export const TestimonialCard: React.FC<TestimonialCardProps> = ({
           </span>
         </div>
 
-        {/* Read More Indicator */}
         <div className="mt-3 text-blue-600 dark:text-blue-400 text-sm font-medium group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
           Read full review
           <motion.span

@@ -12,11 +12,7 @@ export const ProjectSkeleton = () => (
       {/* Header */}
       <div className="flex items-start gap-4 mb-4">
         <div className="flex-1 space-y-2">
-          {/* Name */}
-          <Skeleton className="h-5 w-32" />
-          {/* Role */}
           <Skeleton className="h-4 w-24" />
-          {/* Company */}
           <Skeleton className="h-4 w-28" />
         </div>
         

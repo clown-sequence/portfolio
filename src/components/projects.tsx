@@ -4,22 +4,16 @@ import { IconArrowLeft, IconArrowRight, IconExternalLink, IconBrandGithub } from
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState, useRef } from "react";
 
-// Generate random rotation for animations
 const generateRotation = (): number => {
   return Math.floor(Math.random() * 21) - 10;
 };
 
-// Default media configuration
 const defaultMedia: { type: 'image' | 'video'; src: string } = {
   type: 'image',
   src: 'https://images.unsplash.com/photo-1572177812156-58036aae439c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
 };
-
-
 export const Projects: React.FC = () => {
   const { projects } = useProjectsFetcher()
-  console.log(projects);
-  
   const [active, setActive] = useState<number>(0);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const videoRefs = useRef<Map<number, HTMLVideoElement>>(new Map());
@@ -53,20 +47,16 @@ export const Projects: React.FC = () => {
     }
   };
 
-  // Video playback control
   useEffect(() => {
     if (projects.length === 0) return;
 
     const activeProject: Project = projects[active];
     const activeVideo: HTMLVideoElement | undefined = videoRefs.current.get(active);
-
-    // Handle active video
     if (activeVideo && getMediaType(activeProject) === 'video') {
       if (isHovered) {
-        // Small delay to ensure video is ready
         const playPromise = activeVideo.play();
         if (playPromise !== undefined) {
-          playPromise.catch((err: Error) => console.log('Video play failed:', err));
+          playPromise.catch((err: Error) =>  err);
         }
       } else {
         activeVideo.pause();
@@ -74,7 +64,6 @@ export const Projects: React.FC = () => {
       }
     }
 
-    // Pause all other videos
     videoRefs.current.forEach((video: HTMLVideoElement, index: number) => {
       if (index !== active && video) {
         video.pause();
@@ -86,7 +75,6 @@ export const Projects: React.FC = () => {
   return (
     <div className="mx-auto max-w-sm px-4 py-20 font-sans antialiased md:max-w-6xl md:px-8 lg:px-12">
       <div className="relative grid grid-cols-1 gap-20 md:grid-cols-2">
-        {/* Media Section - Sticky on desktop */}
         <div
           className="md:sticky md:top-8 md:self-start"
           onMouseEnter={() => setIsHovered(true)}
@@ -160,7 +148,6 @@ export const Projects: React.FC = () => {
                     />
                   )}
                   
-                  {/* Category Badge with Status */}
                   <div className="absolute top-4 left-4 flex items-center gap-2">
                     <div className="rounded-full bg-black/50 backdrop-blur-sm px-4 py-2">
                       <span className="text-sm font-semibold text-white">
@@ -178,9 +165,8 @@ export const Projects: React.FC = () => {
             </AnimatePresence>
           </div>
           
-          {/* Navigation */}
-          <div className="flex mt-15 items-center justify-between pt-12 md:pt-0">
-            <div className="flex gap-4">
+          <div className="flex mt-25 items-center justify-between pt-12 md:pt-0">
+            <div className="flex z-50 gap-4">
               <button
                 onClick={handlePrev}
                 className="group/button flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 transition-colors"
@@ -191,9 +177,9 @@ export const Projects: React.FC = () => {
               <button
                 onClick={handleNext}
                 className="group/button flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 transition-colors"
-                aria-label="Next project"
+                aria-label="Previous project"
               >
-                <IconArrowRight className="h-5 w-5 text-black transition-transform duration-300 group-hover/button:-rotate-12 dark:text-neutral-400" />
+                <IconArrowRight className="h-5 w-5 text-black transition-transform duration-300 group-hover/button:rotate-12 dark:text-neutral-400" />
               </button>
             </div>
             

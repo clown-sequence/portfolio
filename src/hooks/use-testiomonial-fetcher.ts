@@ -284,8 +284,6 @@ export function useTestimonialsFetcher(shouldFetch: boolean = true) {
             error: null,
           });
         }
-        console.log('gggg', state.testimonials);
-        
       } catch (err) {
         console.error('Error fetching testimonials:', err);
         
